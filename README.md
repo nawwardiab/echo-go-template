@@ -3,6 +3,7 @@
 _Simplify Commerce, Empower Growth, Accelerate Success_
 
 [![Go](https://img.shields.io/badge/Go-82.1%25-blue)](https://golang.org/)
+
 Built with the tools and technologies:
 
 ![Markdown](https://img.shields.io/badge/Markdown-000000?logo=markdown) ![Go Modules](https://img.shields.io/badge/Go%20Modules-000000?logo=go) ![YAML](https://img.shields.io/badge/YAML-000000?logo=yaml) ![Echo](https://img.shields.io/badge/Echo-Framework-blue)
