@@ -95,7 +95,6 @@ func (s *Session) Has(r *http.Request) bool {
 
 	sess, sessErr := s.load(r)
 	bl := sessErr == nil && !sess.IsNew 
-
 	return bl 
 }
 

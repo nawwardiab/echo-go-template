@@ -23,8 +23,8 @@ func NewAuthHandler(userService service.UserService, sess *session.Session) *Aut
 
 // GET /register
 func (ah *AuthHandler) RegisterForm(c echo.Context) error{
-	if !ah.session.Has(c.Request()){
-		return c.Redirect(http.StatusSeeOther, "/")
+	if !ah.session.Has(c.Request()) {
+		return c.Redirect(http.StatusSeeOther, "/login")
 	}
 	return c.Render(http.StatusOK, "register.tpl", nil)
 }
@@ -54,8 +54,8 @@ func (ah *AuthHandler) RegisterSubmit(c echo.Context) error {
 
 // GET /login
 func (ah *AuthHandler) LoginForm(c echo.Context) error {
-	if !ah.session.Has(c.Request()){
-		return c.Redirect(http.StatusSeeOther, "/")
+	if !ah.session.Has(c.Request()) {
+		return c.Redirect(http.StatusSeeOther, "/login")
 	}
 	return c.Render(http.StatusOK, "login.tpl", nil)
 }
@@ -90,5 +90,3 @@ func (ah *AuthHandler) Logout(c echo.Context) error {
 	}
 	return c.Redirect(http.StatusSeeOther, "/login")
 }
-
-
