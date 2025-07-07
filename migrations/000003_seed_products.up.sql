@@ -1,0 +1,21 @@
+INSERT INTO products (title,  year, artist,               img,        price, genre)
+VALUES
+('The Doors',                    1967, 'The Doors',         'imgs/1.jpg', 15, 'rock'),
+('Damnation',                    2003, 'Opeth',             'imgs/2.jpg', 17, 'progressive metal'),
+('Immunity',                     2013, 'Jon Hopkins',       'imgs/3.jpg', 18, 'electronic'),
+('Schvitz',                      2022, 'Vulfpeck',          'imgs/4.jpg', 11, 'funk'),
+('More D4ta',                    2022, 'Moderat',           'imgs/5.jpg', 17, 'electronic'),
+('Hodou'' Nisbi',                1967, 'Ziad Rahbani',      'imgs/6.jpg', 15, 'world'),
+('OK Computer',                  1997, 'Radiohead',         'imgs/7.jpg', 12, 'alternative rock'),
+('The Ways We Separate',         2013, 'Beacon',            'imgs/8.jpg', 16, 'electronic'),
+('Lulin',                        2016, 'Gidge',             'imgs/9.jpg', 13, 'electronic'),
+('El Rass',                      2002, 'Ba3d Elhazimeh',    'imgs/10.jpg',11, 'arabic'),
+('A Moon Shaped Pool',           2016, 'Radiohead',         'imgs/11.jpg',15, 'alternative rock'),
+('Junun',                        2015, 'Rajasthan Express', 'imgs/12.jpg',18, 'world'),
+('Random Access Memories',       2013, 'Daft Punk',         'imgs/13.jpg',17, 'electronic'),
+('Skip Divided',                 2013, 'Atoms for Peace',   'imgs/14.jpg',12, 'alternative rock'),
+('Trouble Will Find Me',         2013, 'The National',      'imgs/15.jpg',13, 'indie rock'),
+('Selected Ambient Works I',     1992, 'Aphex Twin',        'imgs/16.jpg',19, 'electronic'),
+('The Final Cut',                1983, 'Pink Floyd',        'imgs/17.jpg',20, 'progressive rock'),
+('Hard Believer',                2014, 'Fink',              'imgs/18.jpg',15, 'folk'),
+('Bloom',                        2012, 'Beach House',       'imgs/19.jpg',16, 'indie rock');
