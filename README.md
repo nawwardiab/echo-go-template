@@ -2,8 +2,9 @@
 
 _Simplify Commerce, Empower Growth, Accelerate Success_
 
-[![Last Commit](https://img.shields.io/github/last-commit/nawwardiab/e-commerce-basic-go-echo)](https://github.com/nawwardiab/e-commerce-basic-go-echo) [![Go](https://img.shields.io/badge/Go-82.1%25-blue)](https://golang.org/) [![Languages](https://img.shields.io/github/languages/count/nawwardiab/e-commerce-basic-go-echo)](https://github.com/nawwardiab/e-commerce-basic-go-echo)
+[![Go](https://img.shields.io/badge/Go-82.1%25-blue)](https://golang.org/)
 Built with the tools and technologies:
+
 ![Markdown](https://img.shields.io/badge/Markdown-000000?logo=markdown) ![Go Modules](https://img.shields.io/badge/Go%20Modules-000000?logo=go) ![YAML](https://img.shields.io/badge/YAML-000000?logo=yaml) ![Echo](https://img.shields.io/badge/Echo-Framework-blue)
 
 ---
