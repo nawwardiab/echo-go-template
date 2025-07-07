@@ -59,13 +59,13 @@ Build _e-commerce-basic-go-echo_ from source and install dependencies:
 1. **Clone the repository:**
 
 ```bash
-git clone https://github.com/nawwardiab/e-commerce-basic-go-echo
+git clone https://github.com/nawwardiab/echo-go-template
 ```
 
 2. **Navigate to the project directory:**
 
 ```bash
-cd e-commerce-basic-go-echo
+cd echo-go-template
 ```
 
 3. **Install the dependencies (using Go modules):**
@@ -85,7 +85,7 @@ go run main.go
 Or build and then run:
 
 ```bash
-go build ./e-commerce-basic-go-echo
+go build ./echo-go-template
 ```
 
 ### Testing
