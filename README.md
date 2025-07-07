@@ -19,7 +19,7 @@ Built with the tools and technologies:
     - [Prerequisites](#prerequisites)
     - [Installation](#installation)
     - [Usage](#usage)
-    - [Testing](#testing)
+   
 
 ---
 
@@ -86,12 +86,4 @@ Or build and then run:
 
 ```bash
 go build ./echo-go-template
-```
-
-### Testing
-
-_e-commerce-basic-go-echo_ uses the built-in Go testing framework. Run the full test suite with:
-
-```bash
-go test ./...
 ```
