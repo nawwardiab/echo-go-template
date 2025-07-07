@@ -26,7 +26,7 @@ Built with the tools and technologies:
 ## Overview
 
 _e-commerce-basic-go-echo_ is a lightweight, modular template for building a complete e-commerce platform using the Echo web framework. It provides a clean, organized architecture that simplifies development of secure user workflows, product management, and shopping-cart functionalities with Echo's powerful routing and middleware capabilities.
-**Why \*\*\***e-commerce-basic-go-echo**\***?\*\*  
+**Why **e-commerce-basic-go-echo*\***?  
 This project helps developers rapidly prototype and build scalable online stores with core features like user registration, product browsing, and cart management. Built on Echo's high-performance HTTP router, it offers enhanced middleware support and streamlined request handling. The core features include:
 
 - 🔐 **User Authentication:** Secure registration, login, and session handling with Echo's context-aware middleware.
