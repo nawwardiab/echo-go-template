@@ -53,11 +53,12 @@ func main(){
 	
 	// 6. bootstrap echo
 	e:= echo.New()
-	// e.Use(echo.WrapMiddleware(m.ServeStatic(cfg.StaticDir)))
+	// echo.WrapMiddleware(middleware.ServeStatic(cfg.StaticDir))
+	// e.Pre()
+	// e.Pre(middleware)
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
-		Format: "time=${time_rfc3339}, method=${method}, uri=${uri}, status=${status}\n",
+  Format: "time=${time_rfc3339}, method=${method}, uri=${uri}, status=${status}\n",
 	}))
-
 
 
 	// assign view/templates.go to echo renderer
