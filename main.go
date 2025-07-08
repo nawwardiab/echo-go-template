@@ -16,6 +16,15 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
+// Makefile
+// I need targets, dependencies for commands:
+// migrate up: T ./migrations up
+// migrate down: T ./migrations down
+// run: T main.go
+// compile: T
+// clean:
+// reload:
+
 func main(){
 	// 1. load config from config.yaml
 	cfg, configErr := config.Load("config.yaml")
@@ -25,7 +34,6 @@ func main(){
 
 	// 2. initialize db connection
 	connStr := fmt.Sprintf("postgresql://%s:%s@%s:%s/%s", cfg.DB.USER, cfg.DB.PWD, cfg.DB.HOST, cfg.DB.PORT, cfg.DB.DBNAME)
-	fmt.Println(connStr)
 	dbConn, dbConnErr := db.NewDB(connStr)
 	if dbConnErr != nil {
 		log.Fatalf("failed to connect to DB: %v", dbConnErr)
