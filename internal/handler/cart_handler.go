@@ -34,7 +34,7 @@ func (ch *CartHandler) ViewCart(c echo.Context) error {
 
 	var items []model.CartItem
 	for pid, qty := range cart {
-		prod, _ := ch.prodSvc.GetProductByID(pid) // ignore not-found for brevity
+		prod, _ := ch.prodSvc.GetProductByID(pid)
 		items = append(items, model.CartItem{
 			ProductID: pid,
 			Quantity:  qty,
