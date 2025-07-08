@@ -23,6 +23,6 @@ migrate-down:
 
 clean:
 	@echo "–> cleaning"
-	@rm -f bin
+	@rm -f echo-server
 
 reload: clean run
