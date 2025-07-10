@@ -11,6 +11,7 @@ run: compile
 	go run main.go
 
 # Datbase 
+DB_URL := postgres://${DB_USER}:${DB_PWD}@${DB_HOST}:${DB_PORT}/${DB_NAME}
 MIGRATE_TOOL := /home/dci-student/go/bin/migrate
 MIGRATE_DIR := migrations
 
