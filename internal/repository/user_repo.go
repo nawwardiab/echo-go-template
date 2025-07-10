@@ -20,6 +20,7 @@ func (r *UserRepo) GetByUserName(username string) (*model.User, error){
 	u := &model.User{}
 	query := `SELECT * FROM users WHERE username=$1`
 	queryErr := r.db.QueryRow(query, username).Scan(&u.ID, &u.Username, &u.Email, &u.PasswordHash)
+	
 	if queryErr != nil {
 		return nil, fmt.Errorf("Get user by username: %w", queryErr)
 	} else {

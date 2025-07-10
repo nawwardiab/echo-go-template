@@ -13,112 +13,115 @@ import (
 )
 
 type CartHandler struct {
-	sess    session.Session
 	prodSvc service.ProductService
 }
 
-func NewCartHandler(sess *session.Session, prodSvc service.ProductService) *CartHandler {
-	return &CartHandler{sess: *sess, prodSvc: prodSvc}
+func NewCartHandler(prodSvc service.ProductService) *CartHandler {
+	return &CartHandler{prodSvc: prodSvc}
 }
 
 // GET /cart
 func (ch *CartHandler) ViewCart(c echo.Context) error {
-	if !ch.sess.Has(c.Request()) {
+	if session.GetValue(c, "user_id") == nil {
 		return c.Redirect(http.StatusSeeOther, "/login")
+	} else {
+		cart, loadErr := loadCart(c)
+		if loadErr != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "cannot load cart")
+		} else {
+			var items []model.CartItem
+			for pid, qty := range cart {
+				prod, _ := ch.prodSvc.GetProductByID(pid)
+				items = append(items, model.CartItem{
+					ProductID: pid,
+					Quantity:  qty,
+					Product:   *prod,
+				})
+			}
+			return c.Render(http.StatusOK, "cart.tpl", map[string]any{"CartItems": items})
+		}
 	}
-
-	cart, loadErr := loadCart(&ch.sess, c.Request())
-	if loadErr != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "cannot load cart")
-	}
-
-	var items []model.CartItem
-	for pid, qty := range cart {
-		prod, _ := ch.prodSvc.GetProductByID(pid)
-		items = append(items, model.CartItem{
-			ProductID: pid,
-			Quantity:  qty,
-			Product:   *prod,
-		})
-	}
-
-	return c.Render(http.StatusOK, "cart.tpl", map[string]any{"CartItems": items})
 }
 
 // POST /cart/add
 func (ch *CartHandler) AddToCart(c echo.Context) error {
-	if !ch.sess.Has(c.Request()) {
+	if session.GetValue(c, "user_id") == nil {
 		return c.Redirect(http.StatusSeeOther, "/login")
+	} else {
+		pid, _ := strconv.Atoi(c.FormValue("product_id"))
+		qty, _ := strconv.Atoi(c.FormValue("quantity"))
+
+		cart, loadErr := loadCart(c)
+		if loadErr != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "could not load cart")
+		} else {
+			updated := service.AddToCart(cart, pid, qty)
+			saveErr := saveCart(c, updated);
+			
+			if saveErr != nil {
+				return echo.NewHTTPError(http.StatusBadRequest, "cannot save cart")
+			} else {
+				return c.Redirect(http.StatusSeeOther, "/cart")
+			}
+		}
 	}
-
-	pid, _ := strconv.Atoi(c.FormValue("product_id"))
-	qty, _ := strconv.Atoi(c.FormValue("quantity"))
-
-	cart, loadErr := loadCart(&ch.sess, c.Request())
-	if loadErr != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "could not load cart")
-	}
-
-	updated := service.AddToCart(cart, pid, qty)
-
-	saveErr := saveCart(&ch.sess, c.Response().Writer, c.Request(), updated);
-	if saveErr != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "cannot save cart")
-	}
-
-	return c.Redirect(http.StatusSeeOther, "/cart")
 }
 
 // POST /cart/remove
 func (ch *CartHandler) RemoveFromCart(c echo.Context) error {
-	if !ch.sess.Has(c.Request()) {
+	// checks if user logged in
+	if session.GetValue(c, "user_id") == nil {
 		return c.Redirect(http.StatusSeeOther, "/login")
+	} else {
+		// retrieves product_id value and converts to int
+		pid, convErr := strconv.Atoi(c.FormValue("product_id"))
+		if convErr != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "invalid product id")
+		} else {
+			// loads cart map
+			cart, loadErr := loadCart(c)
+			if loadErr != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "could not load cart")
+			} else {				
+				// updates cart map
+				updated := service.RemoveFromCart(cart, pid)
+				saveErr := saveCart(c, updated)
+				if saveErr != nil {
+					return echo.NewHTTPError(http.StatusInternalServerError, "could not save cart")
+				} else {
+					return c.Redirect(http.StatusSeeOther, "/cart")
+				}
+			}
+		}
 	}
-	
-	pid, convErr := strconv.Atoi(c.FormValue("product_id"))
-	if convErr != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "invalid product id")
-	}
-
-	cart, loadErr := loadCart(&ch.sess, c.Request())
-	if loadErr != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "could not load cart")
-	}
-
-	updated := service.RemoveFromCart(cart, pid)
-
-	if err := saveCart(&ch.sess, c.Response().Writer, c.Request(), updated); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "could not save cart")
-	}
-
-	return c.Redirect(http.StatusSeeOther, "/cart")
 }
 
 
 // HELPERS
 // loadCart returns the cart map stored in the session or an empty one.
-func loadCart(s *session.Session, r *http.Request) (service.CartMap, error) {
-	raw, getErr := s.Get(r, "cart")
-	if getErr != nil {
-		return nil, getErr
-	}
-	if raw == "" {
+func loadCart(c echo.Context) (service.CartMap, error) {
+	raw := session.GetValue(c, "cart")
+	str, ok := raw.(string)
+	if raw == nil {
 		return make(service.CartMap), nil
-	}
-
-	var cart service.CartMap
-	unmarshalErr := yaml.Unmarshal([]byte(raw), &cart);
-	if  unmarshalErr != nil {
-		return nil, unmarshalErr
-	}
-	return cart, nil
+	} else if !ok {
+		return nil, echo.NewHTTPError(http.StatusInternalServerError, "malformed cart data")
+	} else {	
+		var cart service.CartMap
+		unmarshalErr := yaml.Unmarshal([]byte(str), &cart);
+		if  unmarshalErr != nil {
+			return nil, unmarshalErr
+		}
+		return cart, nil
+	}	
 }
 
 // saveCart marshals the cart map and stores it back in the session.
-func saveCart(s *session.Session, w http.ResponseWriter, r *http.Request, cart service.CartMap) error {
+func saveCart(c echo.Context, cart service.CartMap) error {
 	enc, marshalErr := yaml.Marshal(cart)
 	if marshalErr != nil {
 		return marshalErr
+	} else {
+		return session.Set(c, "cart", string(enc))
 	}
-	return s.Set(w, r, "cart", string(enc))
 }

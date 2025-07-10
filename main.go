@@ -3,70 +3,72 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 
-	"echo-server/internal/config"
 	"echo-server/internal/db"
 	"echo-server/internal/handler"
 	"echo-server/internal/repository"
 	"echo-server/internal/service"
-	"echo-server/internal/session"
 	"echo-server/internal/view"
 
+	"github.com/gorilla/sessions"
+	"github.com/joho/godotenv"
+	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
 
-// Makefile
-// I need targets, dependencies for commands:
-// migrate up: T ./migrations up
-// migrate down: T ./migrations down
-// run: T main.go
-// compile: T
-// clean:
-// reload:
-
 func main(){
-	// 1. load config from config.yaml
-	cfg, configErr := config.Load("config.yaml")
-	if configErr != nil {
-		log.Fatalf("failed to load cofig: %v", configErr)
+	// load config from .env
+	dotenvErr := godotenv.Load()
+	if dotenvErr != nil {
+		log.Fatal("Error loading .env file")
 	}
 
-	// 2. initialize db connection
-	connStr := fmt.Sprintf("postgresql://%s:%s@%s:%s/%s", cfg.DB.USER, cfg.DB.PWD, cfg.DB.HOST, cfg.DB.PORT, cfg.DB.DBNAME)
+	// initialize db connection
+	// retrieve db connection string values from .env
+	dbHost := os.Getenv("DB_HOST")
+	dbPort := os.Getenv("DB_PORT")
+	dbUser := os.Getenv("DB_USER")
+	dbPwd := os.Getenv("DB_PWD")
+	dbName := os.Getenv("DB_NAME")
+
+	// put them together
+	connStr := fmt.Sprintf("postgresql://%s:%s@%s:%s/%s", dbUser, dbPwd, dbHost, dbPort, dbName)
+
+	// connect to db
 	dbConn, dbConnErr := db.NewDB(connStr)
 	if dbConnErr != nil {
 		log.Fatalf("failed to connect to DB: %v", dbConnErr)
 	}
 	defer dbConn.Close()
 
-	// 3. initialize session store
-	sess := session.NewSession(cfg.Session.Key)
-
-	// 4. wire repositories & services
-	// 	4.1 user repo and service
+	
+	// wire repositories & services
+	// user repo and service
 	userRepo := repository.NewUserRepo(dbConn)
 	userSvc := service.NewUserService(userRepo)
-	// 	4.2 products repo and service
+
+	// products repo and service
 	productRepo := repository.NewProductRepo(dbConn)
 	productSvc := service.NewProductService(productRepo)
-
 	
-	// 5. wire handlers
-	// 	5.1 initialize handlers and pass arguments
-	uh := handler.NewAuthHandler(userSvc, sess)
-	ph := handler.NewProductHandler(productSvc, sess)
-	hh := handler.NewHomeHandler(sess)
-	ch := handler.NewCartHandler(sess, productSvc)
 	
-	// 6. bootstrap echo
+	// wire handlers
+	uh := handler.NewAuthHandler(userSvc)
+	ph := handler.NewProductHandler(productSvc)
+	ch := handler.NewCartHandler(productSvc)
+	
+	// bootstrap echo
 	e:= echo.New()
-	// echo.WrapMiddleware(middleware.ServeStatic(cfg.StaticDir))
-	// e.Pre()
-	// e.Pre(middleware)
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
-  Format: "time=${time_rfc3339}, method=${method}, uri=${uri}, status=${status}\n",
+		Format: "time=${time_rfc3339}, method=${method}, uri=${uri}, status=${status}\n",
 	}))
+	
+	// create session
+	sessKey := os.Getenv("SESSION_KEY")
+	store := sessions.NewCookieStore([]byte(sessKey))
+	e.Use(session.Middleware(store))
 
 
 	// assign view/templates.go to echo renderer
@@ -76,24 +78,33 @@ func main(){
 	}
 	e.Renderer = rend
 
-	// 7. Serve Static files
-	e.Static("/staticFiles", cfg.StaticDir)
+	// Serve Static files
+	staticDir := os.Getenv("STATIC_DIR")
+	e.Static("/staticFiles", staticDir)
 
-	// 8. wire handlers
-	e.GET("/",              hh.ViewHome)                
+	// wire endpoints' handlers
+	// Home
+	e.GET("/",              handler.ViewHome)
+
+	// User Auth
 	e.GET("/login",         uh.LoginForm)
 	e.POST("/login",        uh.LoginSubmit)
 	e.GET("/register",      uh.RegisterForm)
 	e.POST("/register",     uh.RegisterSubmit)
 	e.GET("/logout",        uh.Logout)
 
+	// Products
 	e.GET("/products",           ph.ListProducts)
 	e.GET("/products/:id",       ph.ListProductDetails)
+
+	// Cart
 	e.POST("/cart/add",          ch.AddToCart)
 	e.POST("/cart/remove",       ch.RemoveFromCart)
 	e.GET("/cart",               ch.ViewCart)
 
-	addStr := cfg.Server.HOST + ":" + cfg.Server.PORT
-	// 9. start server
+	// start server
+	serverPort := os.Getenv("SERVER_PORT")
+	serverHost := os.Getenv("SERVER_HOST")
+	addStr := serverHost + ":" + serverPort
 	e.Logger.Fatal(e.Start(addStr))
 }

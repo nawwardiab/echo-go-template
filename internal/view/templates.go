@@ -19,10 +19,12 @@ type TemplateRenderer struct {
 func New(dir string) (*TemplateRenderer, error) {
 	pattern := filepath.Join(dir, "*.tpl")
 	t, tplErr := template.New("").ParseGlob(pattern)
+	
 	if tplErr != nil {
 		return nil, fmt.Errorf("parse templates: %w", tplErr)
+	} else {
+		return &TemplateRenderer{tpls: t}, nil
 	}
-	return &TemplateRenderer{tpls: t}, nil
 }
 
 // Render makes TemplateRenderer satisfy echo.Renderer.

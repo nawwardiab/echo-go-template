@@ -16,8 +16,9 @@ type CartMap map[int]int
 func AddToCart(cart CartMap, productId, quantity int) CartMap {
 	if cart == nil {
 		cart = make(CartMap)
+	} else {
+		cart[productId] += quantity
 	}
-	cart[productId] += quantity
 	return cart
 }
 

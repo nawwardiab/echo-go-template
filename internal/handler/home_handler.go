@@ -8,20 +8,13 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type HomeHandler struct {
-	sess session.Session
-}
 
-func NewHomeHandler(sess *session.Session) *HomeHandler {
-	return &HomeHandler{sess: *sess}
-}
 
-func (hh *HomeHandler) ViewHome(c echo.Context) error {   
-	if !hh.sess.Has(c.Request()) {
+func ViewHome(c echo.Context) error {   
+	if session.GetValue(c, "user_id") == nil {
 		return c.Redirect(http.StatusFound, "/login") 
+	} else {
+		data := map[string]bool{"Logged": true}
+		return c.Render(http.StatusOK, "home.tpl", data)
 	}
-
-	data := map[string]bool{"Logged": true}
-
-	return c.Render(http.StatusOK, "home.tpl", data)
 }

@@ -14,14 +14,13 @@ var ErrDBConnection = errors.New("database: connection failed")
 
 func NewDB(connStr string)(*pgx.Conn, error){
 	config, parsingErr := pgx.ParseURI(connStr)
+	conn, connectionErr := pgx.Connect(config)
+
 	if parsingErr != nil {
 		return nil, fmt.Errorf("invalid connection string: %w", parsingErr)
-	}
-
-	conn, connectionErr := pgx.Connect(config)
-	if connectionErr != nil {
+	} else if connectionErr != nil {
 		return nil, fmt.Errorf("%w: %v", ErrDBConnection, connectionErr)
+	} else {
+		return conn, nil
 	}
-
-	return conn, nil
 }

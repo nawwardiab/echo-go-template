@@ -54,9 +54,10 @@ func (r *ProductRepo) GetProductDetails(id int) (*model.Product, error) {
 
   var p model.Product
   scanErr := row.Scan(&p.ID, &p.Title, &p.Year, &p.Artist, &p.Img, &p.Price, &p.Genre,)
+  
   if scanErr != nil {
     return nil, fmt.Errorf("postgres: scan product %d: %w", id, scanErr)
-  }
-
-  return &p, nil
+  } else {
+    return &p, nil
+  } 
 }

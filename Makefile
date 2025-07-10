@@ -1,3 +1,5 @@
+include .env
+
 all: compile
 	
 compile: *.go config.yaml
@@ -10,7 +12,6 @@ run: compile
 
 # Datbase 
 MIGRATE_TOOL := /home/dci-student/go/bin/migrate
-DB_URL := "postgresql://postgres:LearnGowithRelations@localhost:5432/goplay"
 MIGRATE_DIR := migrations
 
 MIGRATE := ${MIGRATE_TOOL} -path ${MIGRATE_DIR} -database ${DB_URL}
