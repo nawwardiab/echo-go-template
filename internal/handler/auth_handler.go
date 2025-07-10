@@ -35,15 +35,17 @@ func (ah *AuthHandler) RegisterSubmit(c echo.Context) error {
 	email := c.FormValue("email")
 	pwd := c.FormValue("password")
 	rep := c.FormValue("repeatedPassword")
-	_, registerErr := ah.userSvc.Register(usr, email, pwd)
-
+	
 	if usr == "" || email == "" || pwd == "" {
 		data := map[string]string{"Error": "Fill all fields"}
 		return c.Render(http.StatusOK, "register.tpl", data)
 	} else if pwd != rep {
 		data := map[string]string{"Error": "Password and repeated password must match"}			
 		return c.Render(http.StatusOK, "register.tpl", data)
-	} else if	registerErr != nil {
+	} 
+		
+	_, registerErr := ah.userSvc.Register(usr, email, pwd)
+	if	registerErr != nil {
 		if errors.Is(registerErr, service.ErrUserExist) {
 			return c.Render(http.StatusOK, "register.tpl", map[string]string{"Error": registerErr.Error()})
 		} else {
@@ -67,6 +69,8 @@ func (ah *AuthHandler) LoginForm(c echo.Context) error {
 func (ah *AuthHandler) LoginSubmit(c echo.Context) error {
 	username := c.FormValue("username")
 	password := c.FormValue("password")
+
+	//TODO sanitize Form data
 	user, loginErr := ah.userSvc.Login(username, password)
 
 	if loginErr != nil {

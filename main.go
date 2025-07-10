@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 
@@ -18,6 +17,8 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
+
+
 func main(){
 	// load config from .env
 	dotenvErr := godotenv.Load()
@@ -25,19 +26,9 @@ func main(){
 		log.Fatal("Error loading .env file")
 	}
 
-	// initialize db connection
-	// retrieve db connection string values from .env
-	dbHost := os.Getenv("DB_HOST")
-	dbPort := os.Getenv("DB_PORT")
-	dbUser := os.Getenv("DB_USER")
-	dbPwd := os.Getenv("DB_PWD")
-	dbName := os.Getenv("DB_NAME")
-
-	// put them together
-	connStr := fmt.Sprintf("postgresql://%s:%s@%s:%s/%s", dbUser, dbPwd, dbHost, dbPort, dbName)
-
+	
 	// connect to db
-	dbConn, dbConnErr := db.NewDB(connStr)
+	dbConn, dbConnErr := db.NewDB()
 	if dbConnErr != nil {
 		log.Fatalf("failed to connect to DB: %v", dbConnErr)
 	}

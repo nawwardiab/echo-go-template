@@ -3,6 +3,7 @@ package db
 import (
 	"errors"
 	"fmt"
+	"os"
 
 	"github.com/jackc/pgx"
 )
@@ -12,7 +13,18 @@ var ErrDBConnection = errors.New("database: connection failed")
 
 // NewDB initializes and returns a new connection
 
-func NewDB(connStr string)(*pgx.Conn, error){
+func NewDB()(*pgx.Conn, error){
+	// retrieve db connection string values from .env
+	dbHost := os.Getenv("DB_HOST")
+	dbPort := os.Getenv("DB_PORT")
+	dbUser := os.Getenv("DB_USER")
+	dbPwd := os.Getenv("DB_PWD")
+	dbName := os.Getenv("DB_NAME")
+	
+	// DB_URL
+	connStr := fmt.Sprintf("postgresql://%s:%s@%s:%s/%s", dbUser, dbPwd, dbHost, dbPort, dbName)
+	
+	// initialize db connection
 	config, parsingErr := pgx.ParseURI(connStr)
 	conn, connectionErr := pgx.Connect(config)
 
